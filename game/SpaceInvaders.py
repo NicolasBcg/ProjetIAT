@@ -95,25 +95,19 @@ class SpaceInvaders():
         le représenter. Vous pouvez utiliser les accesseurs ci-dessus pour cela. 
         """
 
-        state = np.zeros([self.nf, self.ny, self.nx], dtype=np.float32)
-        X = self.get_indavers_X()
-        Y = self.get_indavers_Y()
-        for i in range(len(X)):
-            state[0][Y[i]][int(X[i])]=1
-        state[1][self.get_bullet_Y()][int(self.get_bullet_X())]=1
-        state[2][self.get_player_Y()][int(self.get_player_X())]=1
-        # state= np.zeros([self.nf], dtype=np.float32)
-        # state0=np.zeros([self.ny, self.nx])
-        # state1=np.zeros([self.ny, self.nx])
-        
+        # state = np.zeros([self.nf, self.ny, self.nx], dtype=np.float32)
         # X = self.get_indavers_X()
         # Y = self.get_indavers_Y()
         # for i in range(len(X)):
-        #     state0[Y[i]][int(X[i])]=1
-        # state1[self.get_bullet_Y()][int(self.get_bullet_X())]=1
-        # state2=np.zeros([self.nx])
-        # state2[int(self.get_player_X())]=1
-        # state=[state0,state1,state2]
+        #     state[0][Y[i]][int(X[i])]=1
+        # state[1][self.get_bullet_Y()][int(self.get_bullet_X())]=1
+        # state[2][self.get_player_Y()][int(self.get_player_X())]=1
+        state = np.zeros([self.nf, 2, 2], dtype=np.float32)
+        X = self.get_indavers_X()
+        Y = self.get_indavers_Y()
+        state[0]=[Y[0],X[0]]
+        state[1]=[self.get_bullet_Y(),self.get_bullet_X()]
+        state[2]=[self.get_player_Y(),self.get_player_X()]
         return state
     "L'état n'est pas implémenté (SpaceInvaders.get_state)"
 
