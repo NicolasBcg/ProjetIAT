@@ -5,7 +5,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 import time
-
+from time import sleep
 from .qagent import QAgent
 from game.SpaceInvaders import SpaceInvaders
 from epsilon_profile import EpsilonProfile
@@ -16,7 +16,7 @@ class DQNAgent(QAgent):
     Cette classe d'agent représente un agent utilisant l'algorithme DQN pour mettre 
     à jour sa politique d'action.
     """
-    TEST_FREQUENCY = 30
+    TEST_FREQUENCY = 31
 
     def __init__(self, qnetwork: nn.Module, eps_profile: EpsilonProfile, gamma: float, alpha: float, replay_memory_size: int = 1000, batch_size: int = 32, target_update_freq: int = 100, tau: float = 1., final_exploration_episode : int = 500):
         """
@@ -113,7 +113,7 @@ class DQNAgent(QAgent):
 
         # Execute N episodes
         for episode in range(n_episodes):
-            print(episode)
+            print("episode : "+str(episode))
             # Reinitialise l'environnement
             state = env.reset()
             # Execute K steps
@@ -124,7 +124,7 @@ class DQNAgent(QAgent):
 
                 # Echantillonne l'état suivant et la récompense
                 next_state, reward, terminal = env.step(action)
-
+                #sleep(0.0001)
                 # Stocke les données d'apprentissage
                 sum_rewards[episode] += reward
                 len_episode[episode] += 1
@@ -135,9 +135,7 @@ class DQNAgent(QAgent):
                 if terminal:
                     n_steps[episode] = step + 1  # number of steps taken
                     break
-
                 state = next_state
-            print("score"+str(sum_rewards[episode]))
             self.epsilon = max(self.final_epsilon, self.epsilon - (1. / self.final_exploration_episode))
             # self.epsilon = max(self.epsilon - self.eps_profile.dec_step, self.eps_profile.final)
 
@@ -154,13 +152,13 @@ class DQNAgent(QAgent):
 
             n_ckpt = 10
             if episode % DQNAgent.TEST_FREQUENCY == DQNAgent.TEST_FREQUENCY - 1:   
-                test_score = self.run_tests(env, 50, max_steps)
+                test_score = self.run_tests(env, 10, max_steps)
                 # train score: %.1f, mean steps: %.1f, test score: %.1f, test extra steps: %.1f,
                 #np.mean(sum_rewards[episode-(n_ckpt-1):episode+1]), np.mean(len_episode[episode-(n_ckpt-1):episode+1]), test_score, np.mean(test_extra_steps), 
                 print('Episode: %5d/%5d, Test score ratio: %.2f, Epsilon: %.2f, Time: %.1f'
                       % (episode + 1, n_episodes, test_score, self.epsilon, time.time() - start_time))
 
-        n_test_runs = 50
+        n_test_runs = 10
         test_score  = self.run_tests(env, n_test_runs, max_steps)
 
         print('Final test score: %.1f' % test_score)
@@ -236,14 +234,17 @@ class DQNAgent(QAgent):
         test_score = 0.
         
         for k in range(n_runs):
+            
             s = env.reset()
             for t in range(max_steps):
                 q = self.policy_net(torch.FloatTensor(s).unsqueeze(0))
                 # greedy action with random tie break
                 a = np.random.choice(np.where(q[0] == q[0].max())[0])
                 sn, r, terminal = env.step(a)
+                #sleep(0.0001)
                 test_score += r
                 if terminal:
                     break
                 s = sn
+
         return test_score / n_runs

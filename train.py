@@ -42,16 +42,16 @@ def main(nn, opt):
 
     """ INITIALISE LES PARAMETRES D'APPRENTISSAGE """
     # Hyperparamètres basiques
-    n_episodes = 60
-    max_steps = 1500
+    n_episodes = 40
+    max_steps = 5000
     alpha = 0.001
     eps_profile = EpsilonProfile(1.0, 0.1)
     final_exploration_episode = 2000
 
     # Hyperparamètres de DQN
     batch_size = 32
-    replay_memory_size = 1300
-    target_update_frequency = 20
+    replay_memory_size = 2000
+    target_update_frequency = 15
     tau = 1.0
 
     """ INSTANCIE LE RESEAU DE NEURONES """
@@ -68,7 +68,7 @@ def main(nn, opt):
     agent = DQNAgent(model, eps_profile, gamma, alpha, replay_memory_size, batch_size, target_update_frequency, tau, final_exploration_episode)
     agent.learn(game, n_episodes, max_steps)
     game = SpaceInvaders(display=True)
-    test_game(game, agent, max_steps=5000, nepisodes=10, speed=0.1, display=True)
+    test_game(game, agent, max_steps=5000, nepisodes=10, speed=0.0001, display=True)
 
 if __name__ == '__main__':
     """ Usage : python main.py [ARGS]
