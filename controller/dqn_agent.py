@@ -16,7 +16,7 @@ class DQNAgent(QAgent):
     Cette classe d'agent représente un agent utilisant l'algorithme DQN pour mettre 
     à jour sa politique d'action.
     """
-    TEST_FREQUENCY = 31
+    TEST_FREQUENCY = 20
 
     def __init__(self, qnetwork: nn.Module, eps_profile: EpsilonProfile, gamma: float, alpha: float, replay_memory_size: int = 1000, batch_size: int = 32, target_update_freq: int = 100, tau: float = 1., final_exploration_episode : int = 500):
         """
@@ -117,6 +117,7 @@ class DQNAgent(QAgent):
             # Reinitialise l'environnement
             state = env.reset()
             # Execute K steps
+            penalty=0
             for step in range(max_steps):
                 
                 # Selectionne une action
@@ -124,13 +125,17 @@ class DQNAgent(QAgent):
 
                 # Echantillonne l'état suivant et la récompense
                 next_state, reward, terminal = env.step(action)
+                reward=reward*1000
+                penalty+=1
+                if reward!=0:
+                    penalty=0
                 #sleep(0.0001)
                 # Stocke les données d'apprentissage
                 sum_rewards[episode] += reward
                 len_episode[episode] += 1
 
                 # Mets à jour la fonction de valeur Q
-                self.updateQ(state, action, reward, next_state, terminal)
+                self.updateQ(state, action, reward-penalty, next_state, terminal)
                 
                 if terminal:
                     n_steps[episode] = step + 1  # number of steps taken
@@ -152,14 +157,15 @@ class DQNAgent(QAgent):
 
             n_ckpt = 10
             if episode % DQNAgent.TEST_FREQUENCY == DQNAgent.TEST_FREQUENCY - 1:   
-                test_score = self.run_tests(env, 10, max_steps)
+                test_score = self.run_tests(env, 5, max_steps)
                 # train score: %.1f, mean steps: %.1f, test score: %.1f, test extra steps: %.1f,
                 #np.mean(sum_rewards[episode-(n_ckpt-1):episode+1]), np.mean(len_episode[episode-(n_ckpt-1):episode+1]), test_score, np.mean(test_extra_steps), 
                 print('Episode: %5d/%5d, Test score ratio: %.2f, Epsilon: %.2f, Time: %.1f'
                       % (episode + 1, n_episodes, test_score, self.epsilon, time.time() - start_time))
 
-        n_test_runs = 10
-        test_score  = self.run_tests(env, n_test_runs, max_steps)
+        n_test_runs = 5
+        n_max_steps=3000
+        test_score  = self.run_tests(env, n_test_runs, n_max_steps)
 
         print('Final test score: %.1f' % test_score)
         
