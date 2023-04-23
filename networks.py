@@ -16,12 +16,12 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         
         self.layers = nn.Sequential(
-            nn.Conv2d(nf, 16, 3, stride=1, padding="same", bias=True),
+            nn.Conv2d(nf, 32, 3, stride=1, padding="same", bias=True),
             nn.ReLU(),
-            nn.Conv2d(16, 16, 3, stride=1, padding="same", bias=True),
+            nn.Conv2d(32, 32, 3, stride=1, padding="same", bias=True),
             nn.ReLU(),
             nn.Flatten(),
-            nn.Linear(2 * 2 * 16, 32),
+            nn.Linear(2 * 2 * 32, 32),
             nn.Linear(32, na)
         )
 

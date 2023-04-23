@@ -33,8 +33,8 @@ class SpaceInvaders():
         self.nx = 800
         self.ny = 600
     
-        # number of planes (joueur,bullet,invaders)locations
-        self.nf = 3
+        # number of planes (joueur,bullet,invaders, bullet state)locations
+        self.nf = 4
 
         # initializing pygame
         pygame.init()
@@ -108,6 +108,10 @@ class SpaceInvaders():
         state[0]=[Y[0],X[0]]
         state[1]=[self.get_bullet_Y(),self.get_bullet_X()]
         state[2]=[self.get_player_Y(),self.get_player_X()]
+        if self.get_bullet_state() == "rest":
+            state[3]=[0,1]
+        else :
+            state[3]=[1,0]
         return state
     "L'état n'est pas implémenté (SpaceInvaders.get_state)"
 
